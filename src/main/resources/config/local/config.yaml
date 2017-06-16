@@ -1,0 +1,48 @@
+server:
+  applicationConnectors:
+    - type: http
+      port: 26666
+  adminConnectors:
+    - type: http
+      port: 26667
+  gzip:
+          bufferSize: 8KiB
+  registerDefaultExceptionMappers: false
+  requestLog:
+      appenders:
+        # Settings for logging to a file.
+        - type: file
+          timeZone: IST
+          logFormat: "%highlight(%-5level) [%d] [%t] [%X{X-Transaction-Id}] [%X{X-Request-Id}] %c - %m%n"
+          # The file to which statements will be logged.
+          currentLogFilename: /var/log/flipkart/my_stuff/myRetailrequests.log
+          #  When the log file rolls over, the file will be archived to example-2012-03-15.log.gz,
+          # example.log will be truncated, and new statements written to it.
+          archivedLogFilenamePattern: /var/log/flipkart/my_stuff/myRetailrequests-%d{yyyy-MM-dd-HH}.log.gz
+          # The maximum number of log files to archive.
+          archivedFileCount: 48
+
+logging:
+  loggers:
+    level: DEBUG
+  appenders:
+    - type: file
+      threshold: DEBUG
+      timeZone: IST
+      logFormat: "[%date] [%-5level] [%thread]  [%logger{10}] [%msg]%n"
+      currentLogFilename:  /var/log/flipkart/my_stuff/myRetail/default.log
+      archivedLogFilenamePattern: /var/log/flipkart/my_stuff/myRetaildefault-%d{yyyy-MM-dd-HH}.log.gz
+      archivedFileCount: 48
+
+
+mongoConfiguration:
+  database: my_retail
+  mongosHosts:
+    - localhost
+  port: 27017
+
+#rotationManagementConfig:
+#  persistentFilePath: "/var/log/myRetail/rotation_status.txt"
+#
+#swagger:
+#  resourcePackage: com.flipkart.three_ps.cartman.services.resources
