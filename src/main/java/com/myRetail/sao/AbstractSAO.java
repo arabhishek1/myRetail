@@ -3,7 +3,6 @@ package com.myRetail.sao;
 import com.myRetail.configurations.MyRetailConfiguration;
 import com.myRetail.exceptions.NonRetryableException;
 import com.myRetail.exceptions.RetryableException;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
@@ -13,7 +12,6 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -79,13 +77,13 @@ public abstract class AbstractSAO {
         return responseBody;
     }
 
-    /*protected String doPost(String url, String payload,
+    protected HttpResponse doPost(String url, String payload,
                             Map<String, String> headers) throws NonRetryableException,
             RetryableException {
         getLOGGER().debug(
                 "Making POST call to : " + url + " with payload : " + payload
                         + " and custom headers : " + headers);
-        String responseBody = null;
+        HttpResponse responseBody = null;
         try {
             HttpPost httpPost = new HttpPost(url);
             // Adding custom headers to request headers
@@ -103,6 +101,7 @@ public abstract class AbstractSAO {
         }
         return responseBody;
     }
+    /*
 
     protected String doPut(String url, String payload,
                             Map<String, String> headers) throws NonRetryableException,

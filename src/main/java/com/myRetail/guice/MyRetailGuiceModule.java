@@ -9,6 +9,8 @@ import com.myRetail.bundle.MongoBundle;
 import com.myRetail.configurations.MyRetailConfiguration;
 import com.myRetail.dao.IPriceDAO;
 import com.myRetail.dao.IProductDAO;
+import com.myRetail.dao.ShipmentWeightHistoryDAO;
+import com.myRetail.dao.impl.MongoShipmentWeightHistoryDAO;
 import com.myRetail.dao.impl.PriceDAO;
 import com.myRetail.dao.impl.ProductDAO;
 import com.myRetail.delegators.IProductDelegator;
@@ -34,6 +36,7 @@ public class MyRetailGuiceModule extends AbstractModule {
         bind(IProductDelegator.class).to(ProductDelegator.class);
         bind(IPriceDAO.class).to(PriceDAO.class);
         bind(IProductDAO.class).to(ProductDAO.class);
+        bind(ShipmentWeightHistoryDAO.class).to(MongoShipmentWeightHistoryDAO.class);
 
     }
 

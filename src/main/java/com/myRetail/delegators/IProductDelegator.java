@@ -3,10 +3,7 @@ package com.myRetail.delegators;
 import com.myRetail.entities.request.UpdatePriceRequest;
 import com.myRetail.entities.response.GetProductAndPriceResponse;
 import com.myRetail.entities.response.ProductResponse;
-import com.myRetail.exceptions.EntityNotFoundException;
-import com.myRetail.exceptions.MongoException;
-import com.myRetail.exceptions.NonRetryableException;
-import com.myRetail.exceptions.RetryableException;
+import com.myRetail.exceptions.*;
 
 import java.io.IOException;
 
@@ -20,4 +17,6 @@ public interface IProductDelegator {
     ProductResponse getProductNameById(int productId) throws EntityNotFoundException, MongoException;
 
     void updatePrice(UpdatePriceRequest updatePriceRequest) throws NonRetryableException, MongoException;
+
+    void cleanUpCartman(String fileName) throws CartmanException;
 }

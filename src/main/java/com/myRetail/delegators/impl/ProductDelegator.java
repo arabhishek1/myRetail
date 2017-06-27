@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.myRetail.dao.IPriceDAO;
 import com.myRetail.dao.IProductDAO;
+import com.myRetail.dao.ShipmentWeightHistoryDAO;
 import com.myRetail.delegators.IProductDelegator;
 import com.myRetail.entities.db_entities.Price;
 import com.myRetail.entities.db_entities.Product;
@@ -11,10 +12,7 @@ import com.myRetail.entities.request.UpdatePriceRequest;
 import com.myRetail.entities.response.GetProductAndPriceResponse;
 import com.myRetail.entities.response.PriceResponse;
 import com.myRetail.entities.response.ProductResponse;
-import com.myRetail.exceptions.EntityNotFoundException;
-import com.myRetail.exceptions.MongoException;
-import com.myRetail.exceptions.NonRetryableException;
-import com.myRetail.exceptions.RetryableException;
+import com.myRetail.exceptions.*;
 import com.myRetail.sao.MyRetailSAO;
 
 import java.io.IOException;
@@ -33,16 +31,19 @@ public class ProductDelegator implements IProductDelegator {
     @Inject
     MyRetailSAO myRetailSAO;
 
+    @Inject
+    ShipmentWeightHistoryDAO shipmentWeightHistoryDAO;
+
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public GetProductAndPriceResponse getProductDetails(int productId) throws EntityNotFoundException, RetryableException, NonRetryableException, IOException, MongoException {
         try {
-            //Preprocess, get all the validations and non DB processing calls done
+            //Preprocess, perform all the validations and non DB processing calls
             ProductResponse productResponse = myRetailSAO.getProductByProductId(productId);
             if (productResponse == null)
                 throw new EntityNotFoundException("Product Not Found!!! ");
 
-            //Actual processing. Current DB transaction
+            //Actual processing. Fetching Document.
             Price price = priceDAO.getPriceByProductId(productId);
             if (price == null)
                 throw new EntityNotFoundException("Product Price Not Found!!!");
@@ -77,6 +78,11 @@ public class ProductDelegator implements IProductDelegator {
         validateRequest(updatePriceRequest);
         Price newPrice = getPriceFromRequest(updatePriceRequest);
         priceDAO.updatePrice(newPrice);
+    }
+
+    @Override
+    public void cleanUpCartman(String fileName) throws CartmanException {
+        shipmentWeightHistoryDAO.removeSWH(fileName);
     }
 
     private void validateRequest(UpdatePriceRequest updatePriceRequest) throws NonRetryableException {

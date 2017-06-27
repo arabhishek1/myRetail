@@ -36,10 +36,11 @@ logging:
 
 
 mongoConfiguration:
-  database: my_retail
   mongosHosts:
-    - localhost
+    - 10.85.119.108
+    - 10.85.129.245
   port: 27017
+  database: cartman
 
 #rotationManagementConfig:
 #  persistentFilePath: "/var/log/myRetail/rotation_status.txt"

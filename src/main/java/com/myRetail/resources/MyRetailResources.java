@@ -67,4 +67,11 @@ public class MyRetailResources {
         }
     }
 
+    @GET
+    @Path("/trigger_cartman_cleanup")
+    public Response triggerCartman(@QueryParam("file_name") String fileName) throws Exception{
+        productDelegator.cleanUpCartman(fileName);
+        return Response.ok().build();
+    }
+
 }
