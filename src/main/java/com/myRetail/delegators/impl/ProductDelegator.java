@@ -82,7 +82,8 @@ public class ProductDelegator implements IProductDelegator {
 
     @Override
     public void cleanUpCartman(String fileName) throws CartmanException {
-        shipmentWeightHistoryDAO.removeSWH(fileName);
+//        shipmentWeightHistoryDAO.removeSWH(fileName);
+        shipmentWeightHistoryDAO.readSWHAndDeleteNewSWHForSFS(fileName);
     }
 
     private void validateRequest(UpdatePriceRequest updatePriceRequest) throws NonRetryableException {

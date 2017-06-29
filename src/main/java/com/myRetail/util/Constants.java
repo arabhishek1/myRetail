@@ -19,6 +19,7 @@ public class Constants {
     public static final String MONGO_IN = "$in";
     public static final String MONGO_SET = "$set";
     public static final String DOCUMENT_ID = "_id";
+    public static final String CREATED_AT = "created_at";
     public static final String TTL_DATE = "ttl_date";
 
 

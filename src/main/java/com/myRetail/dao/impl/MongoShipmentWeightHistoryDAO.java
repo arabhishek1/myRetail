@@ -9,7 +9,6 @@ import com.mongodb.client.MongoCollection;
 import com.myRetail.dao.ShipmentWeightHistoryDAO;
 import com.myRetail.entities.db_entities.*;
 import com.myRetail.exceptions.CartmanException;
-import com.myRetail.sao.AbstractSAO;
 import com.myRetail.sao.MyRetailSAO;
 import com.myRetail.util.Constants;
 import com.myRetail.util.MongoHelper;
@@ -97,6 +96,36 @@ public class MongoShipmentWeightHistoryDAO implements ShipmentWeightHistoryDAO {
     }
 
 
+    @Override
+    public void readSWHAndDeleteNewSWHForSFS(String fileName){
+        Set<String> merchantRefIds = readFileAndPopulateSet(fileName);
+        Set<String> removeIds = new HashSet<>();
+        System.out.println(merchantRefIds.size());
+        for(String mrf_id : merchantRefIds){
+            Document document = new Document(Constants.MERCHANT_REFERENCE_ID, mrf_id.toString()).append(Constants.WEIGHT_SOURCE, WeightSource.SELLER_PACKING_DETAILS.getName());
+            Document sortDocument = new Document(Constants.CREATED_AT, 1);
+            List<Document> documents = shipmentWeightHistoryCollections.find(document).sort(sortDocument).into(new ArrayList<>());
+            List<ShipmentWeightHistory> shipmentWeightHistories = new ArrayList<>();
+            if (documents.size() > 1) {
+                for(int i=1; i < documents.size(); ++i){
+                    shipmentWeightHistories.add(mapper.convertValue(documents.get(i), ShipmentWeightHistory.class));
+//                    System.out.println(shipmentWeightHistories.get(i-1).getShardKey());
+                    removeIds.add(shipmentWeightHistories.get(i-1).getShardKey());
+                }
+//                for (Document doc : documents) {
+//                    shipmentWeightHistories.add(mapper.convertValue(doc, ShipmentWeightHistory.class));
+////                System.out.println(mrf_id + " -> "+shipmentWeightHistories.get(i).getCreatedAt() +" " + shipmentWeightHistories.get(i).toString());
+////                ++i;
+//                }
+
+            }
+        }
+
+        System.out.println(removeIds.size());
+        deleteSWH(removeIds);
+    }
+
+
 
     @Override
     public void removeSWH(String fileName) throws CartmanException {
@@ -144,6 +173,44 @@ public class MongoShipmentWeightHistoryDAO implements ShipmentWeightHistoryDAO {
             System.out.println(ex.getMessage());
             throw new CartmanException(500, CartmanErrorCode.MONGO_ERROR.getName(), ex);
         }
+    }
+
+    private Set<String> readFileAndPopulateSet(String fileName) {
+//        String csvFile = "/Users/abhishek.ar/Downloads/Untitled spreadsheet - Sheet1.csv";
+//        String csvFile = "/Users/abhishek.ar/Downloads/test.csv";
+        String csvFile = fileName;
+        BufferedReader br = null;
+        String line = "";
+        String cvsSplitBy = ",";
+        System.out.println(fileName);
+        Set<String> merchantRefIds = new HashSet<>();
+
+        try {
+
+            br = new BufferedReader(new FileReader(csvFile));
+            while ((line = br.readLine()) != null) {
+                // use comma as separator
+                String[] csv = line.split(cvsSplitBy);
+                merchantRefIds.add(csv[0]);
+                if (csv.length > 1)
+                    System.out.println("csv " + csv[1]);
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return merchantRefIds;
+
     }
 
     private void readFileAndPopulateMap(Map<String, Weight> actualSellerWeightMap, String fileName) {

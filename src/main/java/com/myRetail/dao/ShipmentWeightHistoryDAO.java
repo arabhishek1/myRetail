@@ -24,4 +24,5 @@ public interface ShipmentWeightHistoryDAO {
 
     void removeSWH(String fileName) throws CartmanException;
 
+    void readSWHAndDeleteNewSWHForSFS(String fileName);
 }
